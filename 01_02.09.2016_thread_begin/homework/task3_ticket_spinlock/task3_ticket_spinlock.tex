@@ -1,0 +1,64 @@
+\documentclass[]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{amsthm}
+\usepackage{multirow}
+\usepackage{centernot}
+
+%% for case with sqare bracket
+\makeatletter
+\newenvironment{sqcases}{%
+	\matrix@check\sqcases\env@sqcases
+}{%
+\endarray\right.%
+}
+\def\env@sqcases{%
+	\let\@ifnextchar\new@ifnextchar
+	\left\lbrack
+	\def\arraystretch{1.2}%
+	\array{@{}l@{\quad}l@{}}%
+}
+\makeatother
+
+
+%opening
+\title{Домашнее задание на 16 сентября, задача 3}
+\author{Ульянин Дмитрий}
+\date{14.09.2016}
+
+\newcommand{\olen}{\overline{len}}
+\newcommand{\onum}{\overline{num}}
+\newcommand{\omaxlen}{\overline{maxlen}}
+\newcommand{\osumnum}{\overline{sumnum}}
+\newcommand{\logn}{\log n}
+\newcommand{\Ologn}{O(\logn)}
+\newcommand{\reven}[1]{#1^{2*}}
+\newcommand{\whereRu}{\texttt{Где }}
+\newcommand{\ifRu}{\texttt{Если}}
+\newcommand{\divs}{\vdots}
+\newcommand{\undivs}{\centernot\vdots}
+\relpenalty=10000 
+\binoppenalty=10000
+
+
+\begin{document}
+
+\maketitle
+
+Пусть $k = \texttt{std::thread::hardware\_concurrency}$.
+
+Тогда утверждается, что при $n > k$ \texttt{ticket\_spinlock} будет работать неоптимально.
+
+Действительно, пусть какой-то потом получил ticket и зашел в короткую критическую секцию. По условию поток может исполнить ее много раз за один квант времени, но вместо того, чтобы продолжить исполняться, ему выдается новый билет с номером, большим чем у других потоков. (Происходит это при ${n > k}$, т.к. иначе поток сразу сможет исполняться на свободном потоке ядра процессора).
+
+При этом этот поток теперь будет ждать, пока не придет его очередь снова. Мы теряем время из-за того, что планировщик работает не очень быстро, ибо на это требуется несколько прерываний на процессоре и какие-то вычисления. А так же теряем время на то, что на каждый заход в критическую секцию каким-то процессом \texttt{ticket\_spinlock} будет выполнять не очень тривиальные операции.
+
+\texttt{test\_and\_set\_spinlock} не подвержен этой проблеме, т.к. если процесс выполнил критическую секцию, но квант времени еще не израсходовал, то он просто войдет в \texttt{lock()} и  \texttt{locked\_.exchange(true)} вернет \texttt{false} и поток продолжит исполнять критические секции, пока квант не истечет.
+
+
+\end{document}

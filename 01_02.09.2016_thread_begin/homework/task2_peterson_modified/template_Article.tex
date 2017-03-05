@@ -1,0 +1,42 @@
+\documentclass[]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{amsthm}
+\usepackage{multirow}
+\usepackage{centernot}
+\usepackage{listings}
+
+%opening
+\title{Домашнее задание на 09 сентября. Задача 2.}
+\author{Ульянин Дмитрий}
+\date{09.09.2016}
+
+
+\begin{document}
+
+\maketitle
+
+Пусть, напимер, поток $0$ совершил запись \texttt{victim.store(0)}, а потом был прерван потоком $1$. Поток $1$ совершил запись \texttt{victim.store(1)}, и вошел в критическую секцию, так как не выполняется want[0].
+
+Когда управление будет возвращено потоку $0$, он тоже успешно войдет в критическую секцию, так как \texttt{victim} уже перезаписана и не выполняется \texttt{victim == 0}
+
+Ответ: \texttt{
+	\newline 0: victim = 0;
+	\newline 1: victim = 1;
+	\newline 1: want[1] = 1;
+	\newline 1: load(victim) == 1;
+	\newline 1: load(want[0]) == 0;
+	\newline 1: вход в критическую секцию;
+	\newline 0: want[0] = 0
+	\newline 0: load(victim) == 1;
+	\newline 0: load(want[1]) == 1;
+	\newline 0: вход в критическую секцию}
+
+
+
+\end{document}
